@@ -14,10 +14,6 @@ import (
 	"time"
 )
 
-//go:generate swag fmt -g ../server/server.go
-
-//go:generate swag init -g ../server/server.go -o ../docs --parseDependency --parseInternal --generatedTime --parseDepth 4
-
 //go:generate codegen -type=int ../pkg/ecode
 
 var (

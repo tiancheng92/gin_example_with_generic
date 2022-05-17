@@ -6,6 +6,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func NewController[R RequestInterface, M ModelInterface](service ServiceInterface[R, M]) *Controller[R, M] {
+	return &Controller[R, M]{service}
+}
+
 type Controller[R RequestInterface, M ModelInterface] struct {
 	ServiceInterface[R, M]
 }
@@ -70,6 +74,10 @@ func (c *Controller[R, M]) Delete(ctx *gin.Context) {
 		render.Response(ctx, err)
 	}
 	render.Response(ctx)
+}
+
+func NewReadOnlyController[M ModelInterface](service ReadOnlyServiceInterface[M]) *ReadOnlyController[M] {
+	return &ReadOnlyController[M]{service}
 }
 
 type ReadOnlyController[M ModelInterface] struct {

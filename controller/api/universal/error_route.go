@@ -7,7 +7,6 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// NoRoute no route handler
 func NoRoute(ctx *gin.Context) {
 	render.Response(ctx, errors.WithCode(ecode.ErrPageNotFound, "Page not found"))
 }

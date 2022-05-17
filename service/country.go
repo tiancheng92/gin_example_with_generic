@@ -9,13 +9,11 @@ import (
 )
 
 type CountryService struct {
-	generic.Service[request.Country, model.Country]
+	*generic.Service[request.Country, model.Country]
 }
 
 func NewCountryService(db *gorm.DB) CountryInterface {
 	return &CountryService{
-		generic.Service[request.Country, model.Country]{
-			repository.NewCountryRepository(db),
-		},
+		generic.NewService[request.Country, model.Country](repository.NewCountryRepository(db)),
 	}
 }

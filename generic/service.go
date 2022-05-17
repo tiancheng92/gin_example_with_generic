@@ -5,6 +5,10 @@ import (
 	"gin_example_with_generic/types/paginate"
 )
 
+func NewService[R RequestInterface, M ModelInterface](repo RepositoryInterface[M]) *Service[R, M] {
+	return &Service[R, M]{repo}
+}
+
 type Service[R RequestInterface, M ModelInterface] struct {
 	RepositoryInterface[M]
 }
@@ -35,6 +39,10 @@ type ServiceInterface[R RequestInterface, M ModelInterface] interface {
 	Update(ctx context.Context, pk any, request *R) (*M, error)
 	Create(ctx context.Context, request *R) (*M, error)
 	Delete(ctx context.Context, pk any) error
+}
+
+func NewReadOnlyService[M ModelInterface](repo RepositoryInterface[M]) *ReadOnlyService[M] {
+	return &ReadOnlyService[M]{repo}
 }
 
 type ReadOnlyService[M ModelInterface] struct {

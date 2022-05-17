@@ -10,14 +10,14 @@ import (
 )
 
 type UserService struct {
-	generic.Service[request.User, model.User]
+	*generic.Service[request.User, model.User]
 	userRepository repository.UserInterface
 }
 
 func NewUserService(db *gorm.DB) UserInterface {
 	userRepository := repository.NewUserRepository(db)
 	return &UserService{
-		generic.Service[request.User, model.User]{userRepository},
+		generic.NewService[request.User, model.User](userRepository),
 		userRepository,
 	}
 }

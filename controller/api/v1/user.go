@@ -11,14 +11,14 @@ import (
 )
 
 type UserController struct {
-	generic.Controller[request.User, model.User]
+	*generic.Controller[request.User, model.User]
 	UserService service.UserInterface
 }
 
 func NewUserController(db *gorm.DB) *UserController {
 	userService := service.NewUserService(db)
 	return &UserController{
-		generic.Controller[request.User, model.User]{userService},
+		generic.NewController[request.User, model.User](userService),
 		userService,
 	}
 }

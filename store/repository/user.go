@@ -40,7 +40,7 @@ func (u *UserRepository) List(ctx context.Context, pq *paginate.Query) (*generic
 }
 
 func (u *UserRepository) ListByName(ctx context.Context, name string) ([]*model.User, error) {
-	var ents []*model.User
-	err := u.DB.WithContext(ctx).Preload("Country").Where("`name` = ?", name).Find(&ents).Error
-	return ents, errors.WithCode(ecode.ErrGet, err)
+	var entryList []*model.User
+	err := u.DB.WithContext(ctx).Preload("Country").Where("`name` = ?", name).Find(&entryList).Error
+	return entryList, errors.WithCode(ecode.ErrGet, err)
 }

@@ -114,6 +114,7 @@ func Init(locale string) {
 
 		validatorInfoList = []validatorInfo{
 			{Tag: "required", TagDetail: "required", Msg: "{0}为必填项", TranslateFunc: translateFunc},
+			{Tag: "email", TagDetail: "email", Msg: "{0}格式错误", TranslateFunc: translateFunc},
 			{Tag: "max", TagDetail: "max-string", Msg: "{0}不能大于{1}个字符", TranslateFunc: translateFuncWithParam},
 			{Tag: "max", TagDetail: "max-item", Msg: "{0}最多包含{1}个对象", TranslateFunc: translateFuncWithParam},
 			{Tag: "max", TagDetail: "max-number", Msg: "{0}最大值为{1}", TranslateFunc: translateFuncWithParam},

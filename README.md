@@ -1,5 +1,10 @@
 # Gin Example With Generic - Gin Example 的泛型实现
+
+[![Build Status](https://github.com/tiancheng92/gin_example_with_generic/workflows/Build/badge.svg)](https://github.com/tiancheng92/gin_example_with_generic/actions)
+
+
 ### 代码目录结构
+
 ```text
 ├── cmd                             // 程序入口
 ├── config                          // 读取配置文件方法
@@ -44,3 +49,110 @@
     ├── request                     // 入参结构体
     └── result                      // 返回结构体
 ```
+
+### 默认支持JSON、XML、YAML格式返回
+* JSON:
+    ```bash
+    # Input
+    curl http://127.0.0.1:8080/api/v1/user | jq
+    ````
+    ```json
+    # Output
+    {
+      "data": {
+        "items": [
+          {
+            "id": 1,
+            "created_at": "2022-05-17T13:55:39.354+08:00",
+            "updated_at": "2022-05-17T13:55:39.354+08:00",
+            "name": "tiancheng92",
+            "country": {
+              "id": 1,
+              "created_at": "2022-05-17T12:50:22.28+08:00",
+              "updated_at": "2022-05-17T12:50:22.28+08:00",
+              "name": "china",
+              "name_cn": "中国",
+              "short_name": "cn"
+            },
+            "email": "kiritoeva@icloud.com"
+          }
+        ],
+        "paginate": {
+          "total": 1,
+          "page": 1,
+          "page_size": 20
+        }
+      },
+      "msg": "Success",
+      "code": 100000
+    }
+    ```
+  
+* XML:
+  ```bash
+  # Input
+  curl http://127.0.0.1:8080/api/v1/user  -H 'accept: application/xml'
+  ```
+  ```xml
+  # Output
+  <result>
+      <data>
+          <items>
+              <id>1</id>
+              <created_at>2022-05-17T13:55:39.354+08:00</created_at>
+              <updated_at>2022-05-17T13:55:39.354+08:00</updated_at>
+              <name>tiancheng92</name>
+              <country>
+                  <id>1</id>
+                  <created_at>2022-05-17T12:50:22.28+08:00</created_at>
+                  <updated_at>2022-05-17T12:50:22.28+08:00</updated_at>
+                  <name>china</name>
+                  <name_cn>中国</name_cn>
+                  <short_name>cn</short_name>
+              </country>
+              <email>kiritoeva@icloud.com</email>
+          </items>
+          <paginate>
+              <total>1</total>
+              <page>1</page>
+              <page_size>20</page_size>
+          </paginate>
+      </data>
+      <msg>Success</msg>
+      <code>100000</code>
+  </result>
+  ```
+* YAML:
+  ```bash
+  # Input
+  curl http://127.0.0.1:8080/api/v1/user  -H 'accept: application/x-yaml'
+  ```
+  ```yaml
+  # Output
+  data:
+    items:
+    - id: 1
+      created_at: 2022-05-17T13:55:39.354+08:00
+      updated_at: 2022-05-17T13:55:39.354+08:00
+      name: tiancheng92
+      country:
+        id: 1
+        created_at: 2022-05-17T12:50:22.28+08:00
+        updated_at: 2022-05-17T12:50:22.28+08:00
+        name: china
+        name_cn: 中国
+        short_name: cn
+      email: kiritoeva@icloud.com
+    paginate:
+      total: 1
+      page: 1
+      page_size: 20
+  msg: Success
+  code: 100000
+  ```
+
+### 默认实现Restful接口
+* 入参（request）只需实现[RequestInterface接口](https://github.com/tiancheng92/gin_example_with_generic/blob/main/generic/request.go)即可
+* 数据库模型（model）只需实现[ModelInterface接口](https://github.com/tiancheng92/gin_example_with_generic/blob/main/generic/model.go)即可
+* model、service、controller层只需New出泛型对象与interface，无需自己实现具体方法，参考country系列接口的实现
+* 如有特殊需求，如：model层外键关联、service层特殊业务逻辑等，可以自行对底层泛型方法进行覆盖或添加实现，参考user系列接口的实现

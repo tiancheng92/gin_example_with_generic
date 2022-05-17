@@ -9,13 +9,11 @@ import (
 )
 
 type CountryController struct {
-	generic.Controller[request.Country, model.Country]
+	*generic.Controller[request.Country, model.Country]
 }
 
 func NewCountryController(db *gorm.DB) *CountryController {
 	return &CountryController{
-		generic.Controller[request.Country, model.Country]{
-			service.NewCountryService(db),
-		},
+		generic.NewController[request.Country, model.Country](service.NewCountryService(db)),
 	}
 }

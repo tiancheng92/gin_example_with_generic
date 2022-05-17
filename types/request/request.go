@@ -21,7 +21,7 @@ func (c Country) FormatToModel() generic.ModelInterface {
 
 type User struct {
 	Name      string `json:"name" xml:"name" yaml:"name" binding:"required,max=30" describe_zh:"姓名" describe_en:"name" describe_ja:"名前"`
-	CountryID int    `json:"country_id" xml:"country_id" yaml:"country_id" binding:"required,min=0" describe_zh:"国家ID" describe_en:"country id" describe_ja:"国ID"`
+	CountryID int    `json:"country_id" xml:"country_id" yaml:"country_id" binding:"required,min=1" describe_zh:"国家ID" describe_en:"country id" describe_ja:"国ID"`
 	Email     string `json:"email" xml:"email" yaml:"email" binding:"required,email" describe_zh:"邮箱" describe_en:"email" describe_ja:"メール"`
 }
 
