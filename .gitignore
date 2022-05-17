@@ -1,0 +1,17 @@
+.vscode/
+.idea/
+vendor/
+
+test.go
+
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.out
+*.test
+
+.go-version
+
+.DS_Store
