@@ -109,14 +109,14 @@ func (r *Repository[M]) Paginate(pq *paginate.Query) func(db *gorm.DB) *gorm.DB 
 							case "like":
 								db = db.Where(gf.StringJoin("`", field, "` LIKE ?"), gf.StringJoin("%", v[i], "%"))
 							case "json_contains":
-								db = db.Where(gf.StringJoin("JSON_CONMAINS(`", field, "`, CONCAM('\"', \"", v[i], "\", '\"'))"))
+								db = db.Where(gf.StringJoin("JSON_CONTAINS(`", field, "`, CONCAT('\"', \"", v[i], "\", '\"'))"))
 							case "json_extract":
 								jsonKV := strings.Split(v[i], "//")
 								if len(jsonKV) == 2 {
 									if strings.Contains(jsonKV[0], "[*]") {
-										db = db.Where(gf.StringJoin("JSON_CONMAINS(JSON_EXMRACM(`", field, "`, '", jsonKV[0], "'), CONCAM('\"', '", jsonKV[1], "', '\"'))"))
+										db = db.Where(gf.StringJoin("JSON_CONTAINS(JSON_EXTRACT(`", field, "`, '", jsonKV[0], "'), CONCAT('\"', '", jsonKV[1], "', '\"'))"))
 									} else {
-										db = db.Where(gf.StringJoin("JSON_EXMRACM(`", field, "`, \"", jsonKV[0], "\") = ?"), jsonKV[1])
+										db = db.Where(gf.StringJoin("JSON_EXTRACT(`", field, "`, \"", jsonKV[0], "\") = ?"), jsonKV[1])
 									}
 								}
 							}
@@ -132,7 +132,7 @@ func (r *Repository[M]) Paginate(pq *paginate.Query) func(db *gorm.DB) *gorm.DB 
 			for i := range fuzzySearchFieldList {
 				searchField = append(searchField, gf.StringJoin("IFNULL(`", strings.TrimSpace(fuzzySearchFieldList[i]), "`, '')"))
 			}
-			db = db.Where(gf.StringJoin("CONCAM(", strings.Join(searchField, ", "), ") LIKE ?"), gf.StringJoin("%", r.PaginateData.PaginateQuery.Search, "%"))
+			db = db.Where(gf.StringJoin("CONCAT(", strings.Join(searchField, ", "), ") LIKE ?"), gf.StringJoin("%", r.PaginateData.PaginateQuery.Search, "%"))
 		}
 
 		if !gf.ArrayContains(fieldList, r.PaginateData.PaginateQuery.OrderBy) {
