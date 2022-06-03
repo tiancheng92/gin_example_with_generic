@@ -64,7 +64,6 @@ func Response(ctx *gin.Context, rawData ...any) {
 
 	switch d := data.(type) {
 	case error:
-		ctx.Abort()
 		coder := errors.ParseCoder(d)
 		result.Code = coder.Code()
 		if coder.String() != "" {
