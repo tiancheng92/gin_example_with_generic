@@ -81,11 +81,7 @@ func Response(ctx *gin.Context, rawData ...any) {
 	case PaginateInterface:
 		p := d.GetPaginate()
 		if p == nil {
-			p = &paginate.Info{
-				Total:    0,
-				Page:     0,
-				PageSize: 0,
-			}
+			p = &paginate.Info{}
 		}
 
 		if p.PageSize == 0 {

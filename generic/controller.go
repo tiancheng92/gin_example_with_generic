@@ -22,6 +22,7 @@ func (c *Controller[R, M]) Get(ctx *gin.Context) {
 	res, err := c.ServiceInterface.Get(ctx, pk)
 	if err != nil {
 		render.Response(ctx, err)
+		return
 	}
 	render.Response(ctx, res)
 }
@@ -30,6 +31,7 @@ func (c *Controller[R, M]) List(ctx *gin.Context) {
 	res, err := c.ServiceInterface.List(ctx, bind.PaginateQuery(ctx))
 	if err != nil {
 		render.Response(ctx, err)
+		return
 	}
 	render.Response(ctx, res)
 }
@@ -43,6 +45,7 @@ func (c *Controller[R, M]) Create(ctx *gin.Context) {
 	res, err := c.ServiceInterface.Create(ctx, &r)
 	if err != nil {
 		render.Response(ctx, err)
+		return
 	}
 	render.Response(ctx, res)
 }
@@ -61,6 +64,7 @@ func (c *Controller[R, M]) Update(ctx *gin.Context) {
 	res, err := c.ServiceInterface.Update(ctx, pk, &r)
 	if err != nil {
 		render.Response(ctx, err)
+		return
 	}
 	render.Response(ctx, res)
 }
@@ -72,6 +76,7 @@ func (c *Controller[R, M]) Delete(ctx *gin.Context) {
 	}
 	if err = c.ServiceInterface.Delete(ctx, pk); err != nil {
 		render.Response(ctx, err)
+		return
 	}
 	render.Response(ctx)
 }
@@ -92,6 +97,7 @@ func (roc *ReadOnlyController[M]) Get(ctx *gin.Context) {
 	res, err := roc.ReadOnlyServiceInterface.Get(ctx, pk)
 	if err != nil {
 		render.Response(ctx, err)
+		return
 	}
 	render.Response(ctx, res)
 }
@@ -100,6 +106,7 @@ func (roc *ReadOnlyController[M]) List(ctx *gin.Context) {
 	res, err := roc.ReadOnlyServiceInterface.List(ctx, bind.PaginateQuery(ctx))
 	if err != nil {
 		render.Response(ctx, err)
+		return
 	}
 	render.Response(ctx, res)
 }

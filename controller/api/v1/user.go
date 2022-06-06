@@ -27,6 +27,7 @@ func (u *UserController) ListByName(ctx *gin.Context) {
 	res, err := u.UserService.ListByName(ctx, ctx.Param("name"))
 	if err != nil {
 		render.Response(ctx, err)
+		return
 	}
 	render.Response(ctx, res)
 }
