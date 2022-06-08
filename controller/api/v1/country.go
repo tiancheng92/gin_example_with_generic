@@ -12,7 +12,7 @@ type CountryController struct {
 	*generic.Controller[request.Country, model.Country]
 }
 
-func NewCountryController(db *gorm.DB) *CountryController {
+func NewCountryController(db *gorm.DB) CountryInterface {
 	return &CountryController{
 		generic.NewController[request.Country, model.Country](service.NewCountryService(db)),
 	}

@@ -15,7 +15,7 @@ type UserController struct {
 	UserService service.UserInterface
 }
 
-func NewUserController(db *gorm.DB) *UserController {
+func NewUserController(db *gorm.DB) UserInterface {
 	userService := service.NewUserService(db)
 	return &UserController{
 		generic.NewController[request.User, model.User](userService),

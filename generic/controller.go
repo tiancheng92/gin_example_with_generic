@@ -81,6 +81,14 @@ func (c *Controller[R, M]) Delete(ctx *gin.Context) {
 	render.Response(ctx)
 }
 
+type ControllerInterface[R RequestInterface, M ModelInterface] interface {
+	Get(ctx *gin.Context)
+	List(ctx *gin.Context)
+	Update(ctx *gin.Context)
+	Create(ctx *gin.Context)
+	Delete(ctx *gin.Context)
+}
+
 func NewReadOnlyController[M ModelInterface](service ReadOnlyServiceInterface[M]) *ReadOnlyController[M] {
 	return &ReadOnlyController[M]{service}
 }
@@ -109,4 +117,9 @@ func (roc *ReadOnlyController[M]) List(ctx *gin.Context) {
 		return
 	}
 	render.Response(ctx, res)
+}
+
+type ReadOnlyControllerInterface[M ModelInterface] interface {
+	Get(ctx *gin.Context)
+	List(ctx *gin.Context)
 }
