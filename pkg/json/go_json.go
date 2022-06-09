@@ -1,12 +1,11 @@
-//go:build jsoniter
-// +build jsoniter
+//go:build go_json
+// +build go_json
 
 package json
 
-import jsoniter "github.com/json-iterator/go"
+import json "github.com/goccy/go-json"
 
 var (
-	json          = jsoniter.ConfigCompatibleWithStandardLibrary
 	Marshal       = json.Marshal
 	Unmarshal     = json.Unmarshal
 	MarshalIndent = json.MarshalIndent
