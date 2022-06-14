@@ -2,6 +2,7 @@ package ecode
 
 import (
 	"gin_example_with_generic/pkg/errors"
+	"net/http"
 )
 
 type ErrCode struct {
@@ -10,19 +11,19 @@ type ErrCode struct {
 	Message    string
 }
 
-func (coder ErrCode) Code() int {
-	return coder.ErrCode
+func (e *ErrCode) Code() int {
+	return e.ErrCode
 }
 
-func (coder ErrCode) String() string {
-	return coder.Message
+func (e *ErrCode) String() string {
+	return e.Message
 }
 
-func (coder ErrCode) HTTPStatus() int {
-	if coder.HttpStatus == 0 {
-		return 500
+func (e *ErrCode) HTTPStatus() int {
+	if e.HttpStatus == 0 {
+		return http.StatusInternalServerError
 	}
-	return coder.HttpStatus
+	return e.HttpStatus
 }
 
 func register(code int, httpStatus int, message string) {
