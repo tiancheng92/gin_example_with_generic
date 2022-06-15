@@ -27,7 +27,7 @@ func (e *ErrCode) HTTPStatus() int {
 }
 
 func register(code int, httpStatus int, message string) {
-	errors.MustRegister(&ErrCode{
+	errors.Register(&ErrCode{
 		ErrCode:    code,
 		HttpStatus: httpStatus,
 		Message:    message,

@@ -20,10 +20,14 @@ func GetDefaultDB() *gorm.DB {
 	return defaultDB
 }
 
-func InitDefaultDB() {
+func initDefaultDB() {
 	var (
 		conf = config.GetConf()
 		dsn  = gf.StringJoin(conf.Mysql.DBUser, ":", conf.Mysql.DBPassword, "@tcp(", conf.Mysql.DBHost, ")/", conf.Mysql.DBName, "?charset=utf8&parseTime=true&loc=Local")
 	)
 	defaultDB = mysql.GetGormClient(dsn, defaultDBTables)
+}
+
+func Init() {
+	initDefaultDB()
 }

@@ -8,6 +8,7 @@ import (
 	"gin_example_with_generic/server"
 	"gin_example_with_generic/store"
 	"github.com/spf13/cobra"
+	"github.com/tiancheng92/gf"
 	_ "go.uber.org/automaxprocs"
 	"math/rand"
 	"os"
@@ -33,13 +34,20 @@ func init() {
 			log.Init(config.GetConf().Log.Level)
 			// 参数校验国际化
 			validator.Init(config.GetConf().I18n.Locale)
-			// 初始化默认数据库
-			store.InitDefaultDB()
+			// 初始化数据库
+			store.Init()
 			// 启动Web服务
 			server.Run()
 		},
 	}
-	rootCmd.PersistentFlags().StringVarP(&configPath, "config_path", "f", "./config_file/local.yaml", "config of the Gin Example")
+
+	defaultConfigPath := "./config_file/local.yaml"
+	env := os.Getenv("APP_ENV") // 环境变量
+	if env != "" {
+		defaultConfigPath = gf.StringJoin("./config_file/", env, ".yaml")
+	}
+
+	rootCmd.PersistentFlags().StringVarP(&configPath, "config_path", "f", defaultConfigPath, "config of the Gin Example")
 }
 
 func main() {

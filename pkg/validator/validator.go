@@ -30,16 +30,15 @@ type validatorInfo struct {
 }
 
 func dateValidatorFunc(fieldLevel validator.FieldLevel) bool {
-	if date, ok := fieldLevel.Field().Interface().(string); ok {
-		if date == "" {
-			return true
-		}
-		if _, err := time.ParseInLocation("2006-01", date, time.Local); err != nil {
-			return false
-		}
+	date := fieldLevel.Field().String()
+	if date == "" {
 		return true
 	}
-	return false
+	if _, err := time.ParseInLocation("2006-01", date, time.Local); err != nil {
+		return false
+	}
+	return true
+
 }
 
 func registerTranslator(tag string, msg string) validator.RegisterTranslationsFunc {

@@ -30,13 +30,6 @@ func (*defaultCoder) HTTPStatus() int {
 
 func Register(coder Coder) {
 	if coder.Code() == 0 {
-		panic("code `0` is unknownCode error code")
-	}
-	codes.Store(coder.Code(), coder)
-}
-
-func MustRegister(coder Coder) {
-	if coder.Code() == 0 {
 		panic("code '0' is ErrUnknown error code")
 	}
 	if _, ok := codes.Load(coder.Code()); ok {
