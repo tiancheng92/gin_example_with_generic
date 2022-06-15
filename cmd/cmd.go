@@ -28,7 +28,7 @@ func init() {
 		Version: "v1.0.0",
 		Short:   "gin example",
 		Long:    "gin example with generic",
-		Run: func(cmd *cobra.Command, args []string) {
+		Run: func(cmd *cobra.Command, _ []string) {
 			config.Init(configPath)
 			// 初始化appLog
 			log.Init(config.GetConf().Log.Level)
