@@ -9,11 +9,12 @@ require (
 	github.com/go-playground/locales v0.14.0
 	github.com/go-playground/universal-translator v0.18.0
 	github.com/go-playground/validator/v10 v10.11.0
+	github.com/goccy/go-json v0.9.7
 	github.com/json-iterator/go v1.1.12
 	github.com/prometheus/client_golang v1.12.2
 	github.com/spf13/cobra v1.4.0
 	github.com/spf13/viper v1.11.0
-	github.com/tiancheng92/gf v1.0.2
+	github.com/tiancheng92/gf v1.0.3
 	go.uber.org/automaxprocs v1.5.1
 	go.uber.org/zap v1.21.0
 	golang.org/x/tools v0.1.10
@@ -27,7 +28,6 @@ require (
 	github.com/fsnotify/fsnotify v1.5.1 // indirect
 	github.com/gin-contrib/sse v0.1.0 // indirect
 	github.com/go-sql-driver/mysql v1.6.0 // indirect
-	github.com/goccy/go-json v0.9.7 // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
 	github.com/inconshreveable/mousetrap v1.0.0 // indirect
