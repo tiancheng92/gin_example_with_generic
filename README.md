@@ -2,56 +2,67 @@
 
 [![Build Status](https://github.com/tiancheng92/gin_example_with_generic/workflows/Build/badge.svg)](https://github.com/tiancheng92/gin_example_with_generic/actions)
 
-
-
-# 项目简介
+## 项目简介
 
 * gin_example_with_generic是一个基于Gin开发的一个简单的API框架，并对controller、service、model层进行泛型化。
+* 项目地址：[tiancheng92/gin_example_with_generic](https://github.com/tiancheng92/gin_example_with_generic)
 
-# 使用方法
 
-## 必要组件
+## 使用方法
+
+### 必要组件
 
 * `mysql`
 
-## 安装
+### 安装
 
 ```shell
 go get -u github.com/tiancheng92/gin_example_with_generic
 ```
 
-## 配置
+### 配置
 
 * 修改`./config_file/local.yaml`文件
 
 ```yaml
 Mysql:
-  DBHost: "127.0.0.1"     # 数据库地址
-  DBPort: "3306"          # 数据库端口
-  DBName: "gin_example"   # 数据库名称
-  DBUser: "root"          # 数据库用户名
-  DBPassword: ""          # 数据库密码
+  DBHost: "127.0.0.1"     ## 数据库地址
+  DBPort: "3306"          ## 数据库端口
+  DBName: "gin_example"   ## 数据库名称
+  DBUser: "root"          ## 数据库用户名
+  DBPassword: ""          ## 数据库密码
 
 Server:
-  Mode: "debug"           # 运行模式，test、debug或release
-  ServicePort: "8080"     # 服务端口
-  ServiceHost: "0.0.0.0"  # 服务器地址
+  Mode: "debug"           ## 运行模式，test、debug或release
+  ServicePort: "8080"     ## 服务端口
+  ServiceHost: "0.0.0.0"  ## 服务器地址
 
 Log:
-  Level: "debug"          # 日志级别，debug、info、warn、error
+  Level: "debug"          ## 日志级别，debug、info、warn、error
 
 I18n:
-  Locale: "zh"            # 国际化，zh en ja
+  Locale: "zh"            ## 国际化，zh en ja
 ```
 
-## 运行
+### 构建
+
+* 模型内建了自己的json包，支持使用[go_json](https://github.com/goccy/go-json)或[json-iterator](https://github.com/json-iterator/go)
+  进行json解析。
+
+| json解析方式                    | 构建约束                        |
+|-----------------------------|-----------------------------|
+| encoding/json               | go build ...                |
+| github.com/goccy/go-json    | go build -tags=go_json ...  |
+| github.com/json-iterator/go | go build -tags=jsoniter ... |
+
+### 运行
 
 ```shell
 cd $GOPATH/src/gin-example-with-generic
 go run -tags=go_json -gcflags=-l=4 -ldflags=-s -w ./cmd/cmd.go
 ```
 
-### 项目的运行信息
+#### 项目的运行信息
 
 ```text
 2022/06/18 12:51:24 maxprocs: Leaving GOMAXPROCS=8: CPU quota undefined
@@ -86,7 +97,7 @@ go run -tags=go_json -gcflags=-l=4 -ldflags=-s -w ./cmd/cmd.go
 [GIN-debug] DELETE /api/v1/user/:pk          --> gin_example_with_generic/controller/api/v1.UserInterface.Delete-fm (5 handlers)
 ```
 
-# 项目目录结构
+## 项目目录结构
 
 ```text
 ├── cmd                             // 程序入口
@@ -133,11 +144,11 @@ go run -tags=go_json -gcflags=-l=4 -ldflags=-s -w ./cmd/cmd.go
     └── result                      // 返回结构体
 ```
 
-# 各个模块说明
+## 各个模块说明
 
-## 泛型实现
+### 泛型实现
 
-### Model层
+#### Model层
 
 * 数据库模型需要实现[ModelInterface](https://github.com/tiancheng92/gin_example_with_generic/blob/main/generic/model.go)
   接口，自带的`SoftDeleteModel`与`Model`默认实现了`GetPrimaryKeyName() string`方法与`GetPrimaryKey() any`
@@ -171,7 +182,7 @@ type RepositoryInterface[M ModelInterface] interface {
   中的方法进行重写或新增，参考[store/repository/user.go](https://github.com/tiancheng92/gin_example_with_generic/blob/main/store/repository/user.go)
   。
 
-### Service层
+#### Service层
 
 * Service层泛型包含了俩个结构体模型：
     * `ReadOnlyService[M ModelInterface]`
@@ -203,7 +214,7 @@ type ReadOnlyServiceInterface[M ModelInterface] interface {
   结构体后对接口中的方法进行重写或新增，参考[store/service/user.go](https://github.com/tiancheng92/gin_example_with_generic/blob/main/service/user.go)
   。
 
-### Controller层
+#### Controller层
 
 * 从API接口获取的数据模型需要实现
   [RequestInterface](https://github.com/tiancheng92/gin_example_with_generic/blob/main/generic/request.go)接口。
@@ -246,7 +257,7 @@ type ReadOnlyControllerInterface[M ModelInterface] interface {
   结构体后对接口中的方法进行重写或新增，参考[controller/api/v1/user.go](https://github.com/tiancheng92/gin_example_with_generic/blob/main/controller/api/v1/user.go)
   。
 
-## 参数绑定
+### 参数绑定
 
 | 函数签名                                                     | 描述             |
 |:---------------------------------------------------------|----------------|
@@ -255,10 +266,11 @@ type ReadOnlyControllerInterface[M ModelInterface] interface {
 | func ParamsID(ctx *gin.Context, key string) (int, error) | 获取Param中的ID    |
 | func PaginateQuery(ctx *gin.Context) *paginate.Query     | 获取分页数据         |
 
+* 以上函数均是对gin.bind的二次分装，并对绑定过程中发生的错误进行了渲染返回，故用户在发生参数绑定错误后，无需手动渲染错误返回直接return即可。
 * Code：
   [pkg/http/bind/request.go](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/http/bind/request.go)
 
-## 参数校验
+### 参数校验
 
 * gin_example_with_generic模型使用[validator](https://github.com/go-playground/validator)进行参数校验，并对其进行了二次分装。
 * 默认支持了中、英、日语言（仅需在配置文件的`I18n.Locale`字段中进行设置）
@@ -266,13 +278,13 @@ type ReadOnlyControllerInterface[M ModelInterface] interface {
 * Code：
   [pkg/validator/validator.go](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/validator/validator.go)
 
-## 数据渲染
+### 数据渲染
 
 * 任意数据均通过
   [Response(ctx *gin.Context, rawData ...any)](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/http/render/result.go)
   进行渲染，并自动根据请求的accept头进行格式化（针对rawData的不同类型会有不同的处理方式）。
 
-### 普通数据
+#### 普通数据
 
 * 如果rawData类型既没有实现
   [PaginateInterface](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/http/render/result.go)
@@ -286,7 +298,7 @@ type ReadOnlyControllerInterface[M ModelInterface] interface {
 }
 ```
 
-### error数据
+#### error数据
 
 * 如果rawData类型为Error类型，且实现了[Coder](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/errors/code.go)
   接口，则返回对应的错误码和错误信息，否则返回默认错误码（500）和默认错误信息
@@ -300,7 +312,7 @@ type ReadOnlyControllerInterface[M ModelInterface] interface {
 }
 ```
 
-### 分页数据
+#### 分页数据
 
 * 如果rawData类型实现了
   [PaginateInterface](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/http/render/result.go)
@@ -321,9 +333,9 @@ type ReadOnlyControllerInterface[M ModelInterface] interface {
 }
 ```
 
-## 分页
+### 分页
 
-### 通用参数
+#### 通用参数
 
 | Query参数名  | 描述                                                                |
 |:----------|:------------------------------------------------------------------|
@@ -334,28 +346,28 @@ type ReadOnlyControllerInterface[M ModelInterface] interface {
 | order     | 排序参数（desc:倒序、asc：正序）（默认倒序）                                        |
 | all_data  | 为true时忽略分页参数（"", "false", "False", "FALSE", "0" 皆为false）（默认false） |
 
-### 指定字段搜索（字段名均以name为例）
+#### 指定字段搜索
 
-| Query参数名  | 描述     | 举例             |
-|:----------|:-------|:---------------|
-| 字段名       | 等于     | name=abc       |
-| 字段名__ne   | 不等于    | name__ne=abc   |
-| 字段名__gt   | 大于     | name__gt=abc   |
-| 字段名__gte  | 大于等于   | name__gte=abc  |
-| 字段名__lt   | 小于     | name__lt=abc   |
-| 字段名__lte  | 小于等于   | name__lte=abc  |
-| 字段名__sw   | 以...开头 | name__sw=abc   |
-| 字段名__ew   | 以...结尾 | name__ew=abc   |
-| 字段名__like | 包含     | name__like=abc |
+| Query参数名  | 描述     | 举例                        | SQL                                             |
+|:----------|:-------|:--------------------------|:------------------------------------------------|
+| 字段名       | 等于     | name=abc // name=a&name=b | where name = 'abc' // where name in \['a','b'\] |
+| 字段名__ne   | 不等于    | name__ne=abc              | where name != 'abc'                             |
+| 字段名__gt   | 大于     | name__gt=abc              | where name > 'abc'                              |
+| 字段名__gte  | 大于等于   | name__gte=abc             | where name >= 'abc'                             |
+| 字段名__lt   | 小于     | name__lt=abc              | where name < 'abc'                              |
+| 字段名__lte  | 小于等于   | name__lte=abc             | where name <= 'abc'                             |
+| 字段名__sw   | 以...开头 | name__sw=abc              | where name like 'abc%'                          |
+| 字段名__ew   | 以...结尾 | name__ew=abc              | where name like '%abc'                          |
+| 字段名__like | 包含     | name__like=abc            | where name like '%abc%'                         |
 
-### JSON字段搜索
+#### JSON字段搜索
 
-| Query参数名           | 描述                |
-|:-------------------|:------------------|
-| 字段名__json_contains | JSON列表字段包含指定值     |
-| 字段名__json_extract  | JSON字段中的指定字段等于指定值 |
+| Query参数名           | 描述                                     | 举例                                                                                      |
+|:-------------------|:---------------------------------------|:----------------------------------------------------------------------------------------|
+| 字段名__json_contains | JSON列表字段包含指定值                          | name__json_contains=jack                                                                |
+| 字段名__json_extract  | JSON字段中的指定字段等于指定值(json的key与value以//分隔) | name__json_extract=$."www.baidu.com"//1  or name__json_extract=\[*\]."www.baidu.com"//1 |
 
-## 中间件
+### 中间件
 
 | 中间件          | 描述     | 路径                                                                                                                                                                     |
 |:-------------|:-------|:-----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -363,14 +375,21 @@ type ReadOnlyControllerInterface[M ModelInterface] interface {
 | log          | Gin日志  | [pkg/http/middleware/logging/log.go](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/http/middleware/logging/log.go)                             |
 | handle_error | 错误统一处理 | [pkg/http/middleware/handle_error/handle_error.go](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/http/middleware/handle_error/handle_error.go) |
 
-# 构建相关
+### Errors
 
-模型内建了自己的json包，支持使用[go_json](https://github.com/goccy/go-json)或[json-iterator](https://github.com/json-iterator/go)
-进行json解析。
+* 本模型中的errors包是对[pkg/errors](https://github.com/pkg/errors)的二次分装
+* 在原本errors包的基础上添加了WithCode方法，用于设置错误码（多次调用记录最新的错误码，但堆栈信息只保留第一次调用时的）
+* 错误码的定义在
+  [pkg/ecode/base.go](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/ecode/base.go)
+  中，用户只需按规则定义好错误码并执行`codegen -type=int`即可自动生成注册代码
+* Code：
+  [pkg/errors](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/errors)
+  、[pkg/ecode](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/ecode)
+  、[tools/codegen/main.go](https://github.com/tiancheng92/gin_example_with_generic/blob/main/tools/codegen/main.go)
 
-| json解析方式                    | 构建约束                        |
-|-----------------------------|-----------------------------|
-| encoding/json               | go build ...                |
-| github.com/goccy/go-json    | go build -tags=go_json ...  |
-| github.com/json-iterator/go | go build -tags=jsoniter ... |
+### AppLog
+
+* 本模型使用[zap](go.uber.org/zap)包进行app日志处理
+* Code：
+  [pkg/log/app_log.go](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/log/app_log.go)
 
