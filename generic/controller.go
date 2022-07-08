@@ -15,11 +15,14 @@ type Controller[R RequestInterface, M ModelInterface] struct {
 }
 
 func (c *Controller[R, M]) Get(ctx *gin.Context) {
-	pk, err := bind.ParamsID(ctx, "pk")
-	if err != nil {
+	var p struct {
+		PrimaryKey int `uri:"pk"`
+	}
+	if err := bind.Params(ctx, &p); err != nil {
 		return
 	}
-	res, err := c.ServiceInterface.Get(ctx, pk)
+
+	res, err := c.ServiceInterface.Get(ctx, p.PrimaryKey)
 	if err != nil {
 		render.Response(ctx, err)
 		return
@@ -51,8 +54,10 @@ func (c *Controller[R, M]) Create(ctx *gin.Context) {
 }
 
 func (c *Controller[R, M]) Update(ctx *gin.Context) {
-	pk, err := bind.ParamsID(ctx, "pk")
-	if err != nil {
+	var p struct {
+		PrimaryKey int `uri:"pk"`
+	}
+	if err := bind.Params(ctx, &p); err != nil {
 		return
 	}
 
@@ -61,7 +66,7 @@ func (c *Controller[R, M]) Update(ctx *gin.Context) {
 		return
 	}
 
-	res, err := c.ServiceInterface.Update(ctx, pk, &r)
+	res, err := c.ServiceInterface.Update(ctx, p.PrimaryKey, &r)
 	if err != nil {
 		render.Response(ctx, err)
 		return
@@ -70,11 +75,14 @@ func (c *Controller[R, M]) Update(ctx *gin.Context) {
 }
 
 func (c *Controller[R, M]) Delete(ctx *gin.Context) {
-	pk, err := bind.ParamsID(ctx, "pk")
-	if err != nil {
+	var p struct {
+		PrimaryKey int `uri:"pk"`
+	}
+	if err := bind.Params(ctx, &p); err != nil {
 		return
 	}
-	if err = c.ServiceInterface.Delete(ctx, pk); err != nil {
+
+	if err := c.ServiceInterface.Delete(ctx, p.PrimaryKey); err != nil {
 		render.Response(ctx, err)
 		return
 	}
@@ -98,11 +106,14 @@ type ReadOnlyController[M ModelInterface] struct {
 }
 
 func (roc *ReadOnlyController[M]) Get(ctx *gin.Context) {
-	pk, err := bind.ParamsID(ctx, "pk")
-	if err != nil {
+	var p struct {
+		PrimaryKey int `uri:"pk"`
+	}
+	if err := bind.Params(ctx, &p); err != nil {
 		return
 	}
-	res, err := roc.ReadOnlyServiceInterface.Get(ctx, pk)
+
+	res, err := roc.ReadOnlyServiceInterface.Get(ctx, p.PrimaryKey)
 	if err != nil {
 		render.Response(ctx, err)
 		return

@@ -1,8 +1,6 @@
 package bind
 
 import (
-	"gin_example_with_generic/pkg/ecode"
-	"gin_example_with_generic/pkg/errors"
 	"gin_example_with_generic/pkg/http/render"
 	"gin_example_with_generic/pkg/validator"
 	"gin_example_with_generic/types/paginate"
@@ -27,12 +25,12 @@ func Query(ctx *gin.Context, ptr any) error {
 	return err
 }
 
-func ParamsID(ctx *gin.Context, key string) (int, error) {
-	id, err := strconv.Atoi(ctx.Param(key))
-	if id < 1 || err != nil {
-		render.Response(ctx, errors.WithCode(ecode.ErrParam, gf.StringJoin(key, "参数异常（大于等于1）")))
+func Params(ctx *gin.Context, ptr any) error {
+	err := ctx.ShouldBindUri(ptr)
+	if err != nil {
+		render.Response(ctx, validator.HandleValidationErr(err))
 	}
-	return id, err
+	return err
 }
 
 func PaginateQuery(ctx *gin.Context) *paginate.Query {
