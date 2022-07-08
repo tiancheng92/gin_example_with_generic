@@ -25,23 +25,20 @@ go get -u github.com/tiancheng92/gin_example_with_generic
 * 修改`./config_file/local.yaml`文件
 
 ```yaml
-Mysql:
-  DBHost: "127.0.0.1"     ## 数据库地址
-  DBPort: "3306"          ## 数据库端口
-  DBName: "gin_example"   ## 数据库名称
-  DBUser: "root"          ## 数据库用户名
-  DBPassword: ""          ## 数据库密码
+## 数据库链接DSN
+Mysql: "root:@tcp(127.0.0.1:3306)/gin_example?charset=utf8&parseTime=true&loc=Local"
 
+## gin服务配置
 Server:
   Mode: "debug"           ## 运行模式，test、debug或release
   ServicePort: "8080"     ## 服务端口
   ServiceHost: "0.0.0.0"  ## 服务器地址
 
-Log:
-  Level: "debug"          ## 日志级别，debug、info、warn、error
+## 日志级别，debug、info、warn、error
+LogLevel: "debug"
 
-I18n:
-  Locale: "zh"            ## 国际化，zh en ja
+## 国际化
+I18n: "zh" # zh en ja
 ```
 
 ### 构建
@@ -273,7 +270,7 @@ type ReadOnlyControllerInterface[M ModelInterface] interface {
 ### 参数校验
 
 * gin_example_with_generic模型使用[validator](https://github.com/go-playground/validator)进行参数校验，并对其进行了二次分装。
-* 默认支持了中、英、日语言（仅需在配置文件的`I18n.Locale`字段中进行设置）
+* 默认支持了中、英、日语言（仅需在配置文件的`I18n`字段中进行设置）
 * 支持自定义翻译与自定义校验规则定义
 * Code：
   [pkg/validator/validator.go](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/validator/validator.go)
