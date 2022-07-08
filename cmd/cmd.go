@@ -31,9 +31,9 @@ func init() {
 		Run: func(cmd *cobra.Command, _ []string) {
 			config.Init(configPath)
 			// 初始化appLog
-			log.Init(config.GetConf().Log.Level)
+			log.Init(config.GetConf().LogLevel)
 			// 参数校验国际化
-			validator.Init(config.GetConf().I18n.Locale)
+			validator.Init(config.GetConf().I18n)
 			// 初始化数据库
 			store.Init()
 			// 启动Web服务

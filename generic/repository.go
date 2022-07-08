@@ -51,13 +51,16 @@ func (r *Repository[M]) Delete(ctx context.Context, pk any) error {
 }
 
 func (r *Repository[M]) List(ctx context.Context, pq *paginate.Query) (*Paginate[M], error) {
-	err := r.DB.WithContext(ctx).Scopes(r.Paginate(pq)).Find(&r.PaginateData.Items).Offset(-1).Limit(-1).Count(&r.PaginateData.PaginateQuery.Total).Error
+	err := r.DB.WithContext(ctx).Scopes(r.Paginate(pq)).Find(&r.PaginateData.Items).Offset(-1).Limit(-1).Count(&r.PaginateData.Total).Error
 	return r.PaginateData, errors.WithCode(ecode.ErrGet, err)
 }
 
 func (r *Repository[M]) Paginate(pq *paginate.Query) func(db *gorm.DB) *gorm.DB {
 	r.PaginateData = &Paginate[M]{
-		PaginateQuery: pq,
+		Info: &paginate.Info{
+			Page:     pq.Page,
+			PageSize: pq.PageSize,
+		},
 	}
 	return func(db *gorm.DB) *gorm.DB {
 		var fieldList []string
@@ -69,11 +72,11 @@ func (r *Repository[M]) Paginate(pq *paginate.Query) func(db *gorm.DB) *gorm.DB 
 			}
 		}
 
-		if !r.PaginateData.PaginateQuery.AllData {
-			db = db.Offset((r.PaginateData.PaginateQuery.Page - 1) * r.PaginateData.PaginateQuery.PageSize).Limit(r.PaginateData.PaginateQuery.PageSize)
+		if !pq.AllData {
+			db = db.Offset((pq.Page - 1) * pq.PageSize).Limit(pq.PageSize)
 		}
 
-		for k, v := range r.PaginateData.PaginateQuery.Params {
+		for k, v := range pq.Params {
 			if gf.ArrayContains(fieldList, k) {
 				if len(v) == 1 {
 					if v[0] != "" {
@@ -127,23 +130,23 @@ func (r *Repository[M]) Paginate(pq *paginate.Query) func(db *gorm.DB) *gorm.DB 
 		}
 
 		fuzzySearchFieldList := (*new(M)).GetFuzzySearchFieldList()
-		if r.PaginateData.PaginateQuery.Search != "" && len(fuzzySearchFieldList) > 0 {
+		if pq.Search != "" && len(fuzzySearchFieldList) > 0 {
 			var searchField = make([]string, 0, len(fuzzySearchFieldList))
 			for i := range fuzzySearchFieldList {
 				searchField = append(searchField, gf.StringJoin("IFNULL(`", strings.TrimSpace(fuzzySearchFieldList[i]), "`, '')"))
 			}
-			db = db.Where(gf.StringJoin("CONCAT(", strings.Join(searchField, ", "), ") LIKE ?"), gf.StringJoin("%", r.PaginateData.PaginateQuery.Search, "%"))
+			db = db.Where(gf.StringJoin("CONCAT(", strings.Join(searchField, ", "), ") LIKE ?"), gf.StringJoin("%", pq.Search, "%"))
 		}
 
-		if !gf.ArrayContains(fieldList, r.PaginateData.PaginateQuery.OrderBy) {
-			r.PaginateData.PaginateQuery.OrderBy = paginate.DefaultOrderBy
+		if !gf.ArrayContains(fieldList, pq.OrderBy) {
+			pq.OrderBy = paginate.DefaultOrderBy
 		}
 
-		if !gf.ArrayContains([]string{"desc", "asc"}, r.PaginateData.PaginateQuery.Order) {
-			r.PaginateData.PaginateQuery.Order = paginate.DefaultOrder
+		if !gf.ArrayContains([]string{"desc", "asc"}, pq.Order) {
+			pq.Order = paginate.DefaultOrder
 		}
 
-		db = db.Order(gf.StringJoin("`", r.PaginateData.PaginateQuery.OrderBy, "` ", strings.ToUpper(r.PaginateData.PaginateQuery.Order)))
+		db = db.Order(gf.StringJoin("`", pq.OrderBy, "` ", strings.ToUpper(pq.Order)))
 
 		return db
 	}

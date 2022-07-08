@@ -4,7 +4,6 @@ import (
 	"gin_example_with_generic/config"
 	"gin_example_with_generic/pkg/mysql"
 	"gin_example_with_generic/store/model"
-	"github.com/tiancheng92/gf"
 	"gorm.io/gorm"
 )
 
@@ -14,18 +13,14 @@ var (
 )
 
 func GetDefaultDB() *gorm.DB {
-	if config.GetConf().Log.Level == "debug" {
+	if config.GetConf().LogLevel == "debug" {
 		return defaultDB.Debug()
 	}
 	return defaultDB
 }
 
 func initDefaultDB() {
-	var (
-		conf = config.GetConf()
-		dsn  = gf.StringJoin(conf.Mysql.DBUser, ":", conf.Mysql.DBPassword, "@tcp(", conf.Mysql.DBHost, ")/", conf.Mysql.DBName, "?charset=utf8&parseTime=true&loc=Local")
-	)
-	defaultDB = mysql.GetGormClient(dsn, defaultDBTables)
+	defaultDB = mysql.GetGormClient(config.GetConf().Mysql, defaultDBTables)
 }
 
 func Init() {

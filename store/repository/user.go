@@ -35,7 +35,7 @@ func (u *UserRepository) Get(ctx context.Context, pk any) (*model.User, error) {
 }
 
 func (u *UserRepository) List(ctx context.Context, pq *paginate.Query) (*generic.Paginate[model.User], error) {
-	err := u.DB.WithContext(ctx).Scopes(u.Paginate(pq)).Preload("Country").Find(&u.PaginateData.Items).Offset(-1).Limit(-1).Count(&u.PaginateData.PaginateQuery.Total).Error
+	err := u.DB.WithContext(ctx).Scopes(u.Paginate(pq)).Preload("Country").Find(&u.PaginateData.Items).Offset(-1).Limit(-1).Count(&u.PaginateData.Total).Error
 	return u.PaginateData, errors.WithCode(ecode.ErrGet, err)
 }
 

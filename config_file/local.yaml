@@ -1,17 +1,10 @@
-Mysql:
-  DBHost: "127.0.0.1"
-  DBPort: "3306"
-  DBName: "gin_example"
-  DBUser: "root"
-  DBPassword: ""
+Mysql: "root:@tcp(127.0.0.1:3306)/gin_example?charset=utf8&parseTime=true&loc=Local"
 
 Server:
   Mode: "debug"
   ServicePort: "8080"
   ServiceHost: "0.0.0.0"
 
-Log:
-  Level: "debug"
+LogLevel: "debug"
 
-I18n:
-  Locale: "zh" # zh en ja
+I18n: "zh" # zh en ja

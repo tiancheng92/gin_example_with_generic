@@ -53,14 +53,12 @@ func PaginateQuery(ctx *gin.Context) *paginate.Query {
 	}
 
 	return &paginate.Query{
-		Info: &paginate.Info{
-			Page:     page,
-			PageSize: pageSize,
-		},
-		Order:   ctx.DefaultQuery("order", paginate.DefaultOrder),
-		OrderBy: ctx.DefaultQuery("order_by", paginate.DefaultOrderBy),
-		Search:  ctx.DefaultQuery("search", paginate.DefaultSearch),
-		Params:  ctx.Request.URL.Query(),
-		AllData: allData,
+		Page:     page,
+		PageSize: pageSize,
+		Order:    ctx.DefaultQuery("order", paginate.DefaultOrder),
+		OrderBy:  ctx.DefaultQuery("order_by", paginate.DefaultOrderBy),
+		Search:   ctx.DefaultQuery("search", paginate.DefaultSearch),
+		Params:   ctx.Request.URL.Query(),
+		AllData:  allData,
 	}
 }
