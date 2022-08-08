@@ -1,6 +1,7 @@
 package validator
 
 import (
+	"gin_example_with_generic/config"
 	"gin_example_with_generic/pkg/ecode"
 	"gin_example_with_generic/pkg/errors"
 	"gin_example_with_generic/pkg/log"
@@ -80,7 +81,8 @@ func translateFuncWithParam(translator ut.Translator, fieldError validator.Field
 	return msg
 }
 
-func Init(locale string) {
+func initValidator() {
+	locale := config.GetConf().I18n
 	validate, ok := binding.Validator.Engine().(*validator.Validate)
 	if !ok {
 		log.Fatal("binding validate engine failed")
@@ -145,6 +147,20 @@ func Init(locale string) {
 			}
 		}
 	}
+}
+
+func Init() {
+	initValidator()
+
+	go func() {
+		for {
+			select {
+			case <-config.HotUpdateForValidator:
+				initValidator()
+				log.Info("Validator 热更新完成。")
+			}
+		}
+	}()
 }
 
 func HandleValidationErr(err error) error {

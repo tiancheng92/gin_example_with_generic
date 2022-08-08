@@ -8,7 +8,6 @@ import (
 	"gin_example_with_generic/server"
 	"gin_example_with_generic/store"
 	"github.com/spf13/cobra"
-	"github.com/tiancheng92/gf"
 	_ "go.uber.org/automaxprocs"
 	"math/rand"
 	"os"
@@ -17,10 +16,7 @@ import (
 
 //go:generate codegen -type=int ../pkg/ecode
 
-var (
-	configPath string
-	rootCmd    *cobra.Command
-)
+var rootCmd *cobra.Command
 
 func init() {
 	rootCmd = &cobra.Command{
@@ -29,25 +25,17 @@ func init() {
 		Short:   "gin example",
 		Long:    "gin example with generic",
 		Run: func(cmd *cobra.Command, _ []string) {
-			config.Init(configPath)
+			config.Init()
 			// 初始化appLog
-			log.Init(config.GetConf().LogLevel)
+			log.Init()
 			// 参数校验国际化
-			validator.Init(config.GetConf().I18n)
+			validator.Init()
 			// 初始化数据库
 			store.Init()
 			// 启动Web服务
 			server.Run()
 		},
 	}
-
-	defaultConfigPath := "./config_file/local.yaml"
-	env := os.Getenv("APP_ENV") // 环境变量
-	if env != "" {
-		defaultConfigPath = gf.StringJoin("./config_file/", env, ".yaml")
-	}
-
-	rootCmd.PersistentFlags().StringVarP(&configPath, "config_path", "f", defaultConfigPath, "config of the Gin Example")
 }
 
 func main() {

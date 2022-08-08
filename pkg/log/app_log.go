@@ -1,6 +1,7 @@
 package log
 
 import (
+	"gin_example_with_generic/config"
 	"github.com/tiancheng92/gf"
 	"time"
 
@@ -12,10 +13,10 @@ var (
 	logger *zap.Logger
 )
 
-func Init(logLevel string) {
+func initLog() {
 	var level zapcore.Level
 
-	switch logLevel {
+	switch config.GetConf().LogLevel {
 	case "debug":
 		level = zapcore.DebugLevel
 	case "info":
@@ -69,6 +70,20 @@ func Init(logLevel string) {
 		panic(err)
 	}
 	logger = l
+}
+
+func Init() {
+	initLog()
+
+	go func() {
+		for {
+			select {
+			case <-config.HotUpdateForLog:
+				initLog()
+				Info("Log 热更新完成。")
+			}
+		}
+	}()
 }
 
 func DebugWithArg(msg string, fields ...zap.Field) {
