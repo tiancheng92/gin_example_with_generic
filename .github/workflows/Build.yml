@@ -19,4 +19,4 @@ jobs:
         go-version: 1.20.5
 
     - name: Run Build
-      run: go build -tags=go_json -gcflags='-l=4' -ldflags='-s -w' -o gin_example_with_generic ./cmd/cmd.go
+      run: CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -tags=sonic,avx,linux,amd64 -gcflags='-l=4' -ldflags='-s -w' -o gin_example_with_generic ./cmd/cmd.go

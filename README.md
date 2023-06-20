@@ -7,7 +7,6 @@
 * gin_example_with_generic是一个基于Gin开发的一个简单的API框架，并对controller、service、model层进行泛型化。
 * 项目地址：[tiancheng92/gin_example_with_generic](https://github.com/tiancheng92/gin_example_with_generic)
 
-
 ## 使用方法
 
 ### 必要组件
@@ -43,14 +42,16 @@ I18n: "zh" # zh en ja
 
 ### 构建
 
-* 模型内建了自己的json包，支持使用[go_json](https://github.com/goccy/go-json)或[json-iterator](https://github.com/json-iterator/go)
+* 模型内建了自己的json包，支持使用[go_json](https://github.com/goccy/go-json)
+  或[json-iterator](https://github.com/json-iterator/go)
   进行json解析。
 
-| json解析方式                    | 构建约束                        |
-|-----------------------------|-----------------------------|
-| encoding/json               | go build ...                |
-| github.com/goccy/go-json    | go build -tags=go_json ...  |
-| github.com/json-iterator/go | go build -tags=jsoniter ... |
+| json解析方式                                   | 构建约束                                     |
+|--------------------------------------------|------------------------------------------|
+| encoding/json                              | go build ...                             |
+| github.com/goccy/go-json                   | go build -tags=go_json ...               |
+| github.com/json-iterator/go                | go build -tags=jsoniter ...              |
+| github.com/bytedance/sonic （仅支持amd64架构的主机） | go build -tags=sonic,avx,linux,amd64 ... |
 
 ### 运行
 
@@ -154,9 +155,9 @@ go run -tags=go_json -gcflags=-l=4 -ldflags=-s -w ./cmd/cmd.go
 
 ```golang
 type ModelInterface interface {
-    GetPrimaryKeyName() string          // 获取主键名称
-    GetPrimaryKey() any                 // 获取主键值
-    GetFuzzySearchFieldList() []string  // 获取允许模糊查询的字段列表
+GetPrimaryKeyName() string // 获取主键名称
+GetPrimaryKey() any        // 获取主键值
+GetFuzzySearchFieldList() []string // 获取允许模糊查询的字段列表
 }
 ```
 
@@ -167,11 +168,11 @@ type ModelInterface interface {
 
 ```golang
 type RepositoryInterface[M ModelInterface] interface {
-	Get(ctx context.Context, pk any) (*M, error)                        // 查询指定主键的数据
-	Create(ctx context.Context, attributes M) (*M, error)               // 创建数据
-	Update(ctx context.Context, pk any, attributes M) (*M, error)       // 更新数据
-	Delete(ctx context.Context, pk any) error                           // 删除数据
-	List(ctx context.Context, pq *paginate.Query) (*Paginate[M], error) // 分页查询
+Get(ctx context.Context, pk any) (*M, error) // 查询指定主键的数据
+Create(ctx context.Context, attributes M) (*M, error) // 创建数据
+Update(ctx context.Context, pk any, attributes M) (*M, error) // 更新数据
+Delete(ctx context.Context, pk any) error // 删除数据
+List(ctx context.Context, pq *paginate.Query) (*Paginate[M], error) // 分页查询
 }
 ```
 
@@ -194,16 +195,16 @@ type RepositoryInterface[M ModelInterface] interface {
 
 ```golang
 type ServiceInterface[R RequestInterface, M ModelInterface] interface {
-	Get(ctx context.Context, pk any) (*M, error)                         // 查询指定主键的数据
-	List(ctx context.Context, pq *paginate.Query) (*Paginate[M], error)  // 分页查询
-	Update(ctx context.Context, pk any, request *R) (*M, error)          // 更新数据
-	Create(ctx context.Context, request *R) (*M, error)                  // 创建数据
-	Delete(ctx context.Context, pk any) error                            // 删除数据
+Get(ctx context.Context, pk any) (*M, error) // 查询指定主键的数据
+List(ctx context.Context, pq *paginate.Query) (*Paginate[M], error) // 分页查询
+Update(ctx context.Context, pk any, request *R) (*M, error)          // 更新数据
+Create(ctx context.Context, request *R) (*M, error) // 创建数据
+Delete(ctx context.Context, pk any) error                            // 删除数据
 }
 
 type ReadOnlyServiceInterface[M ModelInterface] interface {
-	Get(ctx context.Context, pk any) (*M, error)                         // 查询指定主键的数据
-	List(ctx context.Context, pq *paginate.Query) (*Paginate[M], error)  // 分页查询
+Get(ctx context.Context, pk any) (*M, error) // 查询指定主键的数据
+List(ctx context.Context, pq *paginate.Query) (*Paginate[M], error) // 分页查询
 }
 ```
 
@@ -219,7 +220,7 @@ type ReadOnlyServiceInterface[M ModelInterface] interface {
 
 ```golang
 type RequestInterface interface {
-	FormatToModel() ModelInterface  // 将请求数据格式化为数据库模型
+FormatToModel() ModelInterface // 将请求数据格式化为数据库模型
 }
 ```
 
@@ -230,27 +231,29 @@ type RequestInterface interface {
     * `Controller[R RequestInterface, M ModelInterface]` 默认Controller层,
       实现了[ControllerInterface](https://github.com/tiancheng92/gin_example_with_generic/blob/main/generic/controller.go)
       接口
-* 用户只需在自己的Controller层继承`ReadOnlyController[M ModelInterface]`或`Controller[R RequestInterface, M ModelInterface]`
+* 用户只需在自己的Controller层继承`ReadOnlyController[M ModelInterface]`
+  或`Controller[R RequestInterface, M ModelInterface]`
   结构体，即可实现对Controller层增删改查操作。
 * 泛型Controller仅仅实现了默认的数据绑定以及向Service层传递数据的操作。
 * 泛型Controller接口详解：
 
 ```golang
 type ControllerInterface[R RequestInterface, M ModelInterface] interface {
-	Get(ctx *gin.Context)    // 查询指定主键的数据
-	List(ctx *gin.Context)   // 分页查询
-	Update(ctx *gin.Context) // 更新数据
-	Create(ctx *gin.Context) // 创建数据
-	Delete(ctx *gin.Context) // 删除数据
+Get(ctx *gin.Context) // 查询指定主键的数据
+List(ctx *gin.Context) // 分页查询
+Update(ctx *gin.Context) // 更新数据
+Create(ctx *gin.Context) // 创建数据
+Delete(ctx *gin.Context) // 删除数据
 }
 
 type ReadOnlyControllerInterface[M ModelInterface] interface {
-	Get(ctx *gin.Context)   // 查询指定主键的数据
-	List(ctx *gin.Context)  // 分页查询
+Get(ctx *gin.Context) // 查询指定主键的数据
+List(ctx *gin.Context) // 分页查询
 }
 ```
 
-* 用户可在自己的Controller层继承`ReadOnlyController[M ModelInterface]`或`Controller[R RequestInterface, M ModelInterface]`
+* 用户可在自己的Controller层继承`ReadOnlyController[M ModelInterface]`
+  或`Controller[R RequestInterface, M ModelInterface]`
   结构体后对接口中的方法进行重写或新增，参考[controller/api/v1/user.go](https://github.com/tiancheng92/gin_example_with_generic/blob/main/controller/api/v1/user.go)
   。
 
@@ -297,8 +300,11 @@ type ReadOnlyControllerInterface[M ModelInterface] interface {
 
 #### error数据
 
-* 如果rawData类型为Error类型，且实现了[Coder](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/errors/code.go)
-  接口，则返回对应的错误码和错误信息，否则返回默认错误码（500）和默认错误信息
+*
+
+如果rawData类型为Error类型，且实现了[Coder](https://github.com/tiancheng92/gin_example_with_generic/blob/main/pkg/errors/code.go)
+接口，则返回对应的错误码和错误信息，否则返回默认错误码（500）和默认错误信息
+
 * 如果http_code >= 500，则会在console中打印堆栈信息（需启用`handle_error`中间件）
 
 ```json

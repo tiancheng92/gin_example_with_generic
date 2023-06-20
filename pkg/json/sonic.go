@@ -1,10 +1,11 @@
-//go:build go_json
+//go:build sonic && avx && (linux || windows || darwin) && amd64
 
 package json
 
-import json "github.com/goccy/go-json"
+import "github.com/bytedance/sonic"
 
 var (
+	json = sonic.ConfigStd
 	// Marshal is exported by gin/json package.
 	Marshal = json.Marshal
 	// Unmarshal is exported by gin/json package.
