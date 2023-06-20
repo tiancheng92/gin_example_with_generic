@@ -5,7 +5,6 @@ import (
 	"gin_example_with_generic/config"
 	"gin_example_with_generic/pkg/log"
 	"gin_example_with_generic/router"
-	"gin_example_with_generic/store/model"
 	"github.com/gin-gonic/gin"
 	"github.com/tiancheng92/gf"
 	"net/http"
@@ -37,20 +36,6 @@ func runServer(stop, ready chan struct{}) {
 	go func() {
 		if err := s.ListenAndServe(); err != nil {
 			log.Warnf("Listen Stop, reason: %s", err)
-		}
-	}()
-
-	go func() {
-		for {
-			chanel := model.RegisterCountryWatcher()
-			log.Infof("1、%+v", <-chanel)
-		}
-	}()
-
-	go func() {
-		for {
-			chanel := model.RegisterCountryWatcher()
-			log.Infof("2、%+v", <-chanel)
 		}
 	}()
 
