@@ -9,9 +9,7 @@ import (
 	"gin_example_with_generic/store"
 	"github.com/spf13/cobra"
 	_ "go.uber.org/automaxprocs"
-	"math/rand"
 	"os"
-	"time"
 )
 
 //go:generate codegen -type=int ../pkg/ecode
@@ -39,7 +37,6 @@ func init() {
 }
 
 func main() {
-	rand.Seed(time.Now().UTC().UnixNano())
 	if err := rootCmd.Execute(); err != nil {
 		_, _ = fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)

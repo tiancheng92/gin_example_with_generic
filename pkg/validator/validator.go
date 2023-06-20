@@ -154,11 +154,9 @@ func Init() {
 
 	go func() {
 		for {
-			select {
-			case <-config.HotUpdateForValidator:
-				initValidator()
-				log.Info("Validator 热更新完成。")
-			}
+			<-config.HotUpdateForValidator
+			initValidator()
+			log.Info("Validator 热更新完成。")
 		}
 	}()
 }

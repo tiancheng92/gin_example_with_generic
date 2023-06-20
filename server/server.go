@@ -83,13 +83,11 @@ func Run() {
 	go runServer(stop, ready)
 	go func() {
 		for {
-			select {
-			case <-config.HotUpdateForServer:
-				stop <- struct{}{}
-				<-ready
-				go runServer(stop, ready)
-				log.Info("Gin Server 热更新完成。")
-			}
+			<-config.HotUpdateForServer
+			stop <- struct{}{}
+			<-ready
+			go runServer(stop, ready)
+			log.Info("Gin Server 热更新完成。")
 		}
 	}()
 	<-quit

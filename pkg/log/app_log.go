@@ -2,7 +2,10 @@ package log
 
 import (
 	"gin_example_with_generic/config"
+	"gin_example_with_generic/pkg/json"
+	"github.com/fatih/color"
 	"github.com/tiancheng92/gf"
+	"io"
 	"time"
 
 	"go.uber.org/zap"
@@ -12,6 +15,10 @@ import (
 var (
 	logger *zap.Logger
 )
+
+func GetLogger() *zap.Logger {
+	return logger
+}
 
 func initLog() {
 	var level zapcore.Level
@@ -46,16 +53,31 @@ func initLog() {
 			StacktraceKey: "stacktrace",
 			CallerKey:     "caller",
 			LineEnding:    zapcore.DefaultLineEnding,
+			NewReflectedEncoder: func(writer io.Writer) zapcore.ReflectedEncoder {
+				enc := json.NewEncoder(writer)
+				enc.SetEscapeHTML(false)
+				return enc
+			},
 			EncodeLevel: func(level zapcore.Level, encoder zapcore.PrimitiveArrayEncoder) {
-				encoder.AppendString(gf.StringJoin("[", level.CapitalString(), "]"))
+				var c *color.Color
+				switch level {
+				case zapcore.InfoLevel:
+					c = color.New(color.FgBlue, color.Bold)
+				case zapcore.WarnLevel:
+					c = color.New(color.FgYellow, color.Bold)
+				case zapcore.ErrorLevel, zapcore.DPanicLevel, zapcore.PanicLevel, zapcore.FatalLevel:
+					c = color.New(color.FgRed, color.Bold)
+				default:
+					c = color.New(color.FgWhite, color.Bold)
+				}
+				encoder.AppendString(c.Sprintf("[%s]", level.CapitalString()))
 			},
 			EncodeTime: func(t time.Time, encoder zapcore.PrimitiveArrayEncoder) {
 				encoder.AppendString(t.Format("[2006-01-02 15:04:05.000]"))
 			},
-			EncodeDuration: zapcore.SecondsDurationEncoder,
+			EncodeDuration: zapcore.StringDurationEncoder,
 			EncodeCaller: func(caller zapcore.EntryCaller, encoder zapcore.PrimitiveArrayEncoder) {
 				encoder.AppendString(gf.StringJoin("[", caller.TrimmedPath(), "]:"))
-
 			},
 			ConsoleSeparator: " ",
 		}, // 编码器配置
@@ -77,11 +99,9 @@ func Init() {
 
 	go func() {
 		for {
-			select {
-			case <-config.HotUpdateForLog:
-				initLog()
-				Info("Log 热更新完成。")
-			}
+			<-config.HotUpdateForLog
+			initLog()
+			Info("Log 热更新完成。")
 		}
 	}()
 }

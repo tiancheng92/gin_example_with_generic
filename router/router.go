@@ -5,9 +5,11 @@ import (
 	v1 "gin_example_with_generic/controller/api/v1"
 	crossDomain "gin_example_with_generic/pkg/http/middleware/cross_domain"
 	"gin_example_with_generic/pkg/http/middleware/handle_error"
-	"gin_example_with_generic/pkg/http/middleware/logging"
+	"gin_example_with_generic/pkg/log"
 	"gin_example_with_generic/store"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-contrib/pprof"
+	"github.com/gin-contrib/zap"
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
@@ -16,7 +18,13 @@ import (
 func InitRouter() *gin.Engine {
 	r := gin.New()
 
-	r.Use(gin.LoggerWithConfig(logging.AccessLog))
+	r.Use(ginzap.GinzapWithConfig(log.GetLogger(), &ginzap.Config{
+		TimeFormat: "2006-01-02 15:04:05.000",
+		UTC:        true,
+		SkipPaths:  []string{"/metrics", "/healthz"},
+	}))
+
+	r.Use(ginzap.RecoveryWithZap(log.GetLogger(), true))
 
 	pprof.Register(r, "/debug/pprof")
 
@@ -34,6 +42,7 @@ func InitRouter() *gin.Engine {
 
 	api := r.Group("/api")
 	{
+		api.Use(gzip.Gzip(gzip.DefaultCompression))
 		V1 := api.Group("/v1")
 		{
 			db := store.GetDefaultDB()

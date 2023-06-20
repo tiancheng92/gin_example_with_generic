@@ -1,4 +1,4 @@
-Mysql: "root:@tcp(127.0.0.1:3306)/gin_example?charset=utf8&parseTime=true&loc=Local"
+Mysql: "root:Ys!1234567@tcp(10.155.2.62)/gin_example?charset=utf8mb4&parseTime=true&loc=Local"
 
 Server:
   Mode: "debug"

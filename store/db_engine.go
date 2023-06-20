@@ -33,11 +33,9 @@ func Init() {
 
 	go func() {
 		for {
-			select {
-			case <-config.HotUpdateForStone:
-				initStore()
-				log.Info("Store 热更新完成。")
-			}
+			<-config.HotUpdateForStone
+			initStore()
+			log.Info("Store 热更新完成。")
 		}
 	}()
 }
