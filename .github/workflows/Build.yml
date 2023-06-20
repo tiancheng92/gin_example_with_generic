@@ -16,7 +16,7 @@ jobs:
     - name: Set up Go
       uses: actions/setup-go@v3
       with:
-        go-version: 1.18
+        go-version: 1.20
 
     - name: Run Build
       run: go build -tags=go_json -gcflags='-l=4' -ldflags='-s -w' -o gin_example_with_generic ./cmd/cmd.go
